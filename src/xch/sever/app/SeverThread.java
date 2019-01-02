@@ -134,7 +134,7 @@ public class SeverThread extends Thread {
 		        	break;
 		        case"addFunds":
 		        	dbConnector = new DbConnector();
-			        response = dbConnector.addFunds(contentStrings);
+			        response = dbConnector.updateFunds(contentStrings);
 			        dbConnector.close();
 			        out = socket.getOutputStream();
 			        out.write(response.getBytes("utf8"));
@@ -142,7 +142,7 @@ public class SeverThread extends Thread {
 		        	break;
 		        case"deleteFunds":
 		        	dbConnector = new DbConnector();
-			        response = dbConnector.deleteFunds(contentStrings);
+			        response = dbConnector.updateFunds(contentStrings);
 			        dbConnector.close();
 			        out = socket.getOutputStream();
 			        out.write(response.getBytes("utf8"));
@@ -171,6 +171,22 @@ public class SeverThread extends Thread {
 			        out = socket.getOutputStream();
 			        out.write(response.getBytes("utf8"));
 			        System.out.println("班级管理员授权:"+response);	
+		        	break;
+		        case"getAdmin":
+		        	dbConnector = new DbConnector();
+			        response = dbConnector.getAdmin();
+			        dbConnector.close();
+			        out = socket.getOutputStream();
+			        out.write(response.getBytes("utf8"));
+			        System.out.println("管理员列表:"+response);	
+		        	break;
+		        case"deleteAdmin":
+		        	dbConnector = new DbConnector();
+			        response = dbConnector.deleteAdmin(contentStrings);
+			        dbConnector.close();
+			        out = socket.getOutputStream();
+			        out.write(response.getBytes("utf8"));
+			        System.out.println("删除管理员:"+response);	
 		        	break;
 				default:
 					break;

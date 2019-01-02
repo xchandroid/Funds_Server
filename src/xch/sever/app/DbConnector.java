@@ -219,13 +219,13 @@ public class DbConnector {
    //获取班级的经费详情
    public String getFunds(String []strings) {
 	   
-	   String sql = "select detail from class where class_id ="+strings[1];
+	   String sql = "select detail,remainder from class where class_id ="+strings[1];
 	try {
 		Statement statement;
 		statement = con.createStatement();
 		ResultSet resultSet =statement.executeQuery(sql);
 		if (resultSet.next()) {
-			String result = resultSet.getString("detail")+"++++获取经费信息****##end";
+			String result = resultSet.getString("detail")+"++++"+resultSet.getString("remainder")+"++++获取经费信息****##end";
 			return result;
 		}
 	} catch (SQLException e) {
@@ -295,19 +295,20 @@ public class DbConnector {
    }
    
    public String updateFunds(String[]strings) {
-	    String sql = "update class set detail =? where class_id =?";
+	    String sql = "update class set detail =?,remainder=? where class_id =?";
 	    try {
 			PreparedStatement preparedStatement = con.prepareStatement(sql);
 			preparedStatement.setString(1, strings[1]);
-			preparedStatement.setInt(2, Integer.valueOf(strings[2]));
+			preparedStatement.setString(2, strings[2]);
+			preparedStatement.setInt(3, Integer.valueOf(strings[3]));
 			int i = preparedStatement.executeUpdate();
 			if (i==1) {
-				sql = "select detail from class where class_id ="+strings[2];
+				sql = "select detail,remainder from class where class_id ="+strings[3];
 					Statement statement;
 					statement = con.createStatement();
 					ResultSet resultSet =statement.executeQuery(sql);
 					if (resultSet.next()) {
-						String result = resultSet.getString("detail")+"++++经费信息更新成功****##end";
+						String result = resultSet.getString("detail")+"++++"+resultSet.getString("remainder")+"++++经费信息更新成功****##end";
 						return result;
 					}	
 		}
@@ -320,19 +321,20 @@ public class DbConnector {
    
    
    public String addFunds(String[] strings) {
-	   String sql = "update class set detail =? where class_id =?";
+	   String sql = "update class set detail =?,remainder=? where class_id =?";
 	    try {
 			PreparedStatement preparedStatement = con.prepareStatement(sql);
 			preparedStatement.setString(1, strings[1]);
-			preparedStatement.setInt(2, Integer.valueOf(strings[2]));
+			preparedStatement.setString(2, strings[2]);
+			preparedStatement.setInt(3, Integer.valueOf(strings[3]));
 			int i = preparedStatement.executeUpdate();
 			if (i==1) {
-				sql = "select detail from class where class_id ="+strings[2];
+				sql = "select detail,remainder from class where class_id ="+strings[3];
 					Statement statement;
 					statement = con.createStatement();
 					ResultSet resultSet =statement.executeQuery(sql);
 					if (resultSet.next()) {
-						String result = resultSet.getString("detail")+"++++经费信息添加成功****##end";
+						String result = resultSet.getString("detail")+"++++"+resultSet.getString("remainder")+"++++经费信息添加成功****##end";
 						return result;
 					}	
 		}
@@ -345,19 +347,20 @@ public class DbConnector {
    
    
    public String deleteFunds(String[] strings) {
-	   String sql = "update class set detail =? where class_id =?";
+	   String sql = "update class set detail =?,remainder where class_id =?";
 	    try {
 			PreparedStatement preparedStatement = con.prepareStatement(sql);
 			preparedStatement.setString(1, strings[1]);
-			preparedStatement.setInt(2, Integer.valueOf(strings[2]));
+			preparedStatement.setString(2, strings[2]);
+			preparedStatement.setInt(3, Integer.valueOf(strings[3]));
 			int i = preparedStatement.executeUpdate();
 			if (i==1) {
-				sql = "select detail from class where class_id ="+strings[2];
+				sql = "select detail,remainder from class where class_id ="+strings[3];
 					Statement statement;
 					statement = con.createStatement();
 					ResultSet resultSet =statement.executeQuery(sql);
 					if (resultSet.next()) {
-						String result = resultSet.getString("detail")+"++++经费信息删除成功****##end";
+						String result = resultSet.getString("detail")+"++++"+resultSet.getString("remainder")+"++++经费信息删除成功****##end";
 						return result;
 					}	
 		}
@@ -422,6 +425,40 @@ public class DbConnector {
    
    
    
+   //获取管理员名单
+   public String getAdmin() {
+	   String sql = "select * from student where is_admin=?";
+		PreparedStatement preparedStatement;
+		try {
+			preparedStatement = con.prepareStatement(sql);
+			preparedStatement.setInt(1, 1);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			String s_id="";
+			String class_id="";
+			String name="";
+			String class_name="";
+			String ss="";
+			while (resultSet.next()) {
+			           s_id = resultSet.getString("s_id");
+			           class_id = resultSet.getString("class_id");
+			            //获取name这列数据
+			           name = resultSet.getString("name");
+			            //获取class_name这列数据
+			            class_name = resultSet.getString("class_name");
+			           ss+=s_id+"***"+name+"***"+class_id+"***"+class_name+"****";  //四个星代表切割一行数据，三颗星代表切割每列数据
+			        
+			}
+			return ss+"##end";
+		} catch (SQLException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+	
+		return null;
+	}
+   
+   
+   
    //是否通过成为班级管理员验证
    public String isPass(String[] contentStrings) {
 	   PreparedStatement preparedStatement ;
@@ -444,6 +481,25 @@ public class DbConnector {
 			if (i>0) {
 				return "授权通过****##end";
 			}
+		}
+	} catch (SQLException e) {
+		// TODO 自动生成的 catch 块
+		e.printStackTrace();
+	}
+	return null;
+}
+   
+   
+   public String deleteAdmin(String[] contentStrings) {
+	   String sql = "update student set is_admin=? where s_id=?";
+	   PreparedStatement preparedStatement;
+	   try {
+		preparedStatement = con.prepareStatement(sql);
+		preparedStatement.setInt(1, 0); //将is_admin字段设为0即代表不是管理员了
+		preparedStatement.setInt(2, Integer.parseInt(contentStrings[2]));
+		int i =preparedStatement.executeUpdate();
+		if (i>0) {
+			return "管理员删除成功****##end";
 		}
 	} catch (SQLException e) {
 		// TODO 自动生成的 catch 块
